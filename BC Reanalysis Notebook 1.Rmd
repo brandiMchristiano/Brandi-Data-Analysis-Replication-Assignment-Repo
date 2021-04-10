@@ -1,0 +1,15 @@
+---
+title: "BC Reanalysis Notebook 1"
+author: "BMC"
+date: "4/8/2021"
+output: html_document
+---
+
+```{r}
+g <- read.csv("genotypes.csv")
+head(g)
+
+k <- read.csv("kinship.csv")
+head(k)
+```
+
