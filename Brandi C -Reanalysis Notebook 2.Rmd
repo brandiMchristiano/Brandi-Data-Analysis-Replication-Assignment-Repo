@@ -20,10 +20,11 @@ head(k)
 # Read in data from R data set
 
 # I somehow have to get my data in to knit it 
-("new_bonds_data.rdata")
+load("new_bonds_data.rda")
 head(dyads)
 head(events)
 head(rates)
+
 head(trials)
 ```
 
@@ -45,7 +46,7 @@ library(ggplot2)
 
 ```{r}
 # Set cowplot as theme
-theme_set(theme_cowplot())
+theme_set()
 ```
 
 # Descriptive Statistical Analysis
@@ -54,8 +55,8 @@ theme_set(theme_cowplot())
 ```{r}
 # Number of bats 
 # Each bat is used as a receiver and an actor therefore either of these would suffice
-length(unique(dyads$receiver)) 
-length(unique(dyads$actor))
+length(unique(dyads[,2]))
+length(unique(dyads[,1]))
 
 ```
 
@@ -65,38 +66,36 @@ length(unique(dyads$actor))
 ```{r}
 # Filtering from the dyads data frame, actor population
 # Number of bats captured from Tole 
-length(unique(dyads$actor[which(dyads$a.pop=="tole")])) 
+length(unique(dyads[,1][which(dyads$a.pop=="tole")])) 
 # 19 bats were captured from Tole
 ```
 ```{r}
 # Number of bats captured from Las Pavas
-length(unique(dyads$actor[which(dyads$a.pop=="las.pavas")])) 
+length(unique(dyads[,1][which(dyads$a.pop=="las.pavas")])) 
 # 8 bats were captured from Las Pavas
 ```
 
 ## The remaining 14 bats were captive born bats 
 ```{r}
-length(unique(dyads$actor[which(dyads$a.pop=="captive-born")]))
+length(unique(dyads[,1][which(dyads$a.pop=="captive-born")]))
 ```
 
 ## There were 1,214 possible new relationships among all the bats
 ```{r}
-length(unique(dyads$dir.dyad[which(dyads$new.dyad)])) # filters through the dyads data frame and picks out dyads where the relationship between the two individuals is a new paring (new.dyad=TRUE)
+length(unique(dyads[,3][which(dyads$new.dyad)])) # filters through the dyads data frame and picks out dyads where the relationship between the two individuals is a new paring (new.dyad=TRUE) (directed dyad)
 ```
 # Possibile grooming rate versus Actual grooming rates
 ```{r}
 # Possible grooming rates
-groom.rate1 <- rates %>%  #filters the rates data frame for any behavior marked as grooming ("g")
-  filter(behav=="g") %>% 
-  nrow()
+groom.rate1 <- nrow(rates %>%  #filters the rates data frame for any behavior marked as grooming ("g")
+  filter(behav=="g"))
 groom.rate1
 # There 32,928 possible grooming opportunities
 
 # Actual grooming rates
-groom.rate2 <- rates %>% #filters the rates data frame for any behavior marked as grooming ("g") is greater than 0
+groom.rate2 <- nrow(rates %>% #filters the rates data frame for any behavior marked as grooming ("g") is greater than 0
   filter(behav=="g") %>% 
-  filter(rate>0) %>% 
-  nrow()
+  filter(rate>0)) 
 groom.rate2
 # Grooming actually occurred 3,056 times
 
@@ -109,12 +108,12 @@ groom.rate3
 
 ## There are 17,621 chances for a bat to recieve a donation
 ```{r}
-feed.pos <- rates %>% filter(behav=="f") %>% nrow()  # behav is in the rates dataset
+feed.pos <- nrow(rates %>% filter(behav=="f"))  # behav is in the rates dataset
 feed.pos
 ```
 ## However, during trial, only 668 bats donated food to another bat
 ```{r}
-feed.act <- rates %>% filter(behav=="f") %>% filter(rate>0) %>% nrow() 
+feed.act <- nrow(rates %>% filter(behav=="f") %>% filter(rate>0))
 feed.act
 ```
 ## There is a 3.8% probability that an individual will donate its food to another individual. This is not taking into account any type of relationship or association. 
@@ -126,46 +125,28 @@ feed.probability
 
 
 
-```{r}
-rates %>%  
-  filter(behav=="f"| behav=="g") %>%
-  filter(new.dyad) %>% 
-  filter(rate>0) %>% 
-  group_by(undir.dyad, behav) %>% 
-  summarize(latency= min(days.together)) %>% 
-  spread(key=behav, value=latency) %>% 
-  mutate(diff= f-g) %>% 
-  mutate(same= diff==0) %>% 
-  pull(same) %>% 
-  mean(na.rm=T)
-```
-
-
 
 ```{r}
 # This is the time until two unfamiliar individuals to share food for the first time
-time.to.sharing <- 
+time.to.sharing <- pull(
   rates %>%  
   filter(behav=="f") %>%
   filter(new.dyad) %>% 
   filter(rate>0) %>% 
   group_by(undir.dyad) %>% 
-  summarize(time.to.sharing= min(days.together)) %>% 
-  pull() 
-time.to.sharing
+  summarize(time.to.sharing= min(days.together)))
 mean(time.to.sharing)
 hist((time.to.sharing), main="Time it Took Unfamilar Individuals to Share Food with Eachother")
 ```
 
 ```{r}
-time.to.groom <- 
+time.to.groom <- pull(
   rates %>%  
   filter(behav=="g") %>%
   filter(new.dyad) %>% 
   filter(rate>0) %>% 
   group_by(undir.dyad) %>% 
-  summarize(time.to.groom= min(days.together)) %>% 
-  pull()
+  summarize(time.to.groom= min(days.together)))
 mean(time.to.groom)
 hist((time.to.groom), main="Time it Took Unfamilar Individuals to Groonm Eachother")
 ```
@@ -183,6 +164,17 @@ boot_ci <- function(x, perms=10000) {
   high <- boot$basic[1,5]
   c(low=low,mean=mean,high=high, N=round(length(x)))
 }
+# tring to play with this on my own
+
+s <- rates
+n_boot <- 10000
+boot <- vector(length = n_boot) # set up a dummy variable to hold our simulations
+n <- length(s)
+# number of bootstrap samples will be the same length as our sample data
+for (i in 1:10000) {
+  boot[[i]] <- mean(sample(s, n, replace = TRUE))
+}
+
 ```
 
 ```{r}
@@ -208,23 +200,8 @@ boxplot((time.to.sharing), main = "Time Until First Food Sharing")
 ```
 
 
-```{r}
-# Practice one from analysis
-plot2 <- 
-  rates %>% 
-  filter(period== "big cage") %>%
-  filter(behav=="g") %>%
-  filter(new.dyad) %>% 
-  filter(!is.na(sharing.colony)) %>% 
-  filter(before.first.donation | is.na(before.first.donation)) %>% 
-  mutate(rate3= (rev.groom.rate>0)*1) %>% 
-  ggplot(aes(x=date,y=rate3, group=sharing))+
-  geom_smooth(method = "glm", method.args = list(family = "binomial"))
-
-plot2
-```
-
-```{r}
+```{r} 
+# Figure 2 part 1
 fig2.1 <- rates %>% 
   filter(behav=="g") %>%
    filter(new.dyad) %>%
@@ -239,6 +216,45 @@ fig2.1
 
 ```
 
+
+```{r}
+fig2.2<- rates %>% 
+  filter(behav=="g") %>%
+  filter(new.dyad) %>%
+  filter(period== "big cage") %>%
+  filter(adult.dyad) %>%
+  filter(!is.na(sharing)) %>% # filter out everything that is not NA in sharing ... aka everything that is sharing
+  filter(before.first.donation |is.na(before.first.donation)) %>% 
+  mutate(rate3= (rev.groom.rate2>0)*1) %>% 
+  ggplot(aes(date,rate3, group=sharing))+
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))+ # Authors state they used generalized linear models (glm)
+  xlab("time")
+fig2.2
+
+# I don't really understand how to change the dashed and solid lines. The dashed line should represent individuals not sharing
+```
+
+```{r}
+fig2.3 <- rates %>% 
+   filter(behav=="g") %>%
+  filter(new.dyad) %>% 
+  filter(period== "big cage") %>%
+   filter(!adult.dyad) %>% # looking at new young adults so filter out everything that's not an established adult dyad. 
+  filter(!is.na(sharing)) %>% 
+  filter(before.first.donation | is.na(before.first.donation)) %>% 
+  mutate(rate3= (rev.groom.rate>0)*1) %>% 
+  ggplot(aes(x=date,y=rate3, group=sharing))+
+  geom_smooth(method = "glm",method.args = list(family = "binomial"))+ # showing the standard errors 
+  ylab("probability of being groomed in a trial (before first donation)")+
+  xlab("time")
+
+fig2.3
+
+# Once I figured out what was going on in the first plot, the other two were easier tp recreate. They were exactly the same but with an additional filter.
+```
+```{r}
+grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
+```
 
 
 
