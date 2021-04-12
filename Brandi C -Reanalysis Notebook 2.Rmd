@@ -1,7 +1,7 @@
 ---
 title: "Brandi C- Reanalysis Notebook 2"
 author: "BMC"
-date: "4/11/2021"
+date: "4/14/2021"
 output: html_document
 ---
 
@@ -20,7 +20,7 @@ head(k)
 # Read in data from R data set
 
 # I somehow have to get my data in to knit it 
-
+("new_bonds_data.rdata")
 head(dyads)
 head(events)
 head(rates)
@@ -143,7 +143,7 @@ rates %>%
 
 
 ```{r}
-# This is the time until two unfamilar indivudla share food for the first time
+# This is the time until two unfamiliar individuals to share food for the first time
 time.to.sharing <- 
   rates %>%  
   filter(behav=="f") %>%
@@ -152,10 +152,9 @@ time.to.sharing <-
   group_by(undir.dyad) %>% 
   summarize(time.to.sharing= min(days.together)) %>% 
   pull() 
-boot_ci(time.to.sharing)
-range(time.to.sharing)
-
-plot1 <- (boxplot((time.to.sharing), main= "Time Until First New Sharing"))
+time.to.sharing
+mean(time.to.sharing)
+hist((time.to.sharing), main="Time it Took Unfamilar Individuals to Share Food with Eachother")
 ```
 
 ```{r}
@@ -166,18 +165,80 @@ time.to.groom <-
   filter(rate>0) %>% 
   group_by(undir.dyad) %>% 
   summarize(time.to.groom= min(days.together)) %>% 
-  pull() 
+  pull()
+mean(time.to.groom)
+hist((time.to.groom), main="Time it Took Unfamilar Individuals to Groonm Eachother")
+```
+
+
+```{r}
+# To find the confidence intervals of these events, they boot strapped 10000 samples
+boot_ci <- function(x, perms=10000) {
+  mean.w=function(x,w) sum(x*w)
+  numNA <- sum(is.na(x))
+  x <- as.vector(na.omit(x))
+  mean <- mean(x)
+  boot <- boot.ci(boot(data=x, statistic=mean.w, R=perms, stype="w"), type="basic")
+  low <- boot$basic[1,4]
+  high <- boot$basic[1,5]
+  c(low=low,mean=mean,high=high, N=round(length(x)))
+}
+```
+
+```{r}
+# CI of Time Until First New Sharing
+boot_ci(time.to.sharing)
+
+plot1 <- (boxplot((time.to.sharing), main= "Time Until First New Sharing"))
+```
+
+```{r}
+# CI of Time Unitl First Grooming
 boot_ci(time.to.groom)
-range(time.to.groom)
 
 boxplot((time.to.groom), main= "Time Until First Grooming")
 ```
 
 
 ```{r}
+# Comparison of the two
 par(mfrow = c(1, 2))
 boxplot((time.to.groom),main="Time Until First Grooming")
 boxplot((time.to.sharing), main = "Time Until First Food Sharing")
 ```
+
+
+```{r}
+# Practice one from analysis
+plot2 <- 
+  rates %>% 
+  filter(period== "big cage") %>%
+  filter(behav=="g") %>%
+  filter(new.dyad) %>% 
+  filter(!is.na(sharing.colony)) %>% 
+  filter(before.first.donation | is.na(before.first.donation)) %>% 
+  mutate(rate3= (rev.groom.rate>0)*1) %>% 
+  ggplot(aes(x=date,y=rate3, group=sharing))+
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))
+
+plot2
+```
+
+```{r}
+fig2.1 <- rates %>% 
+  filter(behav=="g") %>%
+   filter(new.dyad) %>%
+  filter(period== "big cage") %>% # this is when they were in groups with unfamilar individuals
+  filter(!is.na(sharing.colony)) %>% # makes non NA into true values
+  filter(before.first.donation | is.na(before.first.donation)) %>% 
+  mutate(rate3= (rev.groom.rate>0)*1) %>% 
+  ggplot(aes(x=date,y=rate3, group=sharing))+
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))+xlab("time")+ylab("probability of being groomed in a trial (before first donation")
+
+fig2.1
+
+```
+
+
 
 
