@@ -1,0 +1,183 @@
+---
+title: "Brandi C- Reanalysis Notebook 2"
+author: "BMC"
+date: "4/11/2021"
+output: html_document
+---
+
+
+# Getting Started 
+```{r}
+# Read in data from CSV Files
+g <- read.csv("genotypes.csv")
+head(g)
+
+k <- read.csv("kinship.csv")
+head(k)
+```
+
+```{r}
+# Read in data from R data set
+
+# I somehow have to get my data in to knit it 
+
+head(dyads)
+head(events)
+head(rates)
+head(trials)
+```
+
+
+```{r}
+# Load Packages Used 
+library(sna)
+library(tidyverse)
+library(boot)
+library(lme4)
+library(lmerTest)
+library(gridExtra)
+library(asnipe)
+library(cowplot)
+library(MuMIn)
+library(ggplot2)
+```
+
+
+```{r}
+# Set cowplot as theme
+theme_set(theme_cowplot())
+```
+
+# Descriptive Statistical Analysis
+
+## 41 bats were used in this study
+```{r}
+# Number of bats 
+# Each bat is used as a receiver and an actor therefore either of these would suffice
+length(unique(dyads$receiver)) 
+length(unique(dyads$actor))
+
+```
+
+## Bats were captured from two different sites in Panama : Tole and Las Pavas
+
+### I had to filter by actor becasue the actors were only listed once and were compared to each reciever
+```{r}
+# Filtering from the dyads data frame, actor population
+# Number of bats captured from Tole 
+length(unique(dyads$actor[which(dyads$a.pop=="tole")])) 
+# 19 bats were captured from Tole
+```
+```{r}
+# Number of bats captured from Las Pavas
+length(unique(dyads$actor[which(dyads$a.pop=="las.pavas")])) 
+# 8 bats were captured from Las Pavas
+```
+
+## The remaining 14 bats were captive born bats 
+```{r}
+length(unique(dyads$actor[which(dyads$a.pop=="captive-born")]))
+```
+
+## There were 1,214 possible new relationships among all the bats
+```{r}
+length(unique(dyads$dir.dyad[which(dyads$new.dyad)])) # filters through the dyads data frame and picks out dyads where the relationship between the two individuals is a new paring (new.dyad=TRUE)
+```
+# Possibile grooming rate versus Actual grooming rates
+```{r}
+# Possible grooming rates
+groom.rate1 <- rates %>%  #filters the rates data frame for any behavior marked as grooming ("g")
+  filter(behav=="g") %>% 
+  nrow()
+groom.rate1
+# There 32,928 possible grooming opportunities
+
+# Actual grooming rates
+groom.rate2 <- rates %>% #filters the rates data frame for any behavior marked as grooming ("g") is greater than 0
+  filter(behav=="g") %>% 
+  filter(rate>0) %>% 
+  nrow()
+groom.rate2
+# Grooming actually occurred 3,056 times
+
+
+# Probability of two bats grooming eachother in a trial
+groom.rate3 <- groom.rate2/groom.rate1
+groom.rate3
+
+```
+
+## There are 17,621 chances for a bat to recieve a donation
+```{r}
+feed.pos <- rates %>% filter(behav=="f") %>% nrow()  # behav is in the rates dataset
+feed.pos
+```
+## However, during trial, only 668 bats donated food to another bat
+```{r}
+feed.act <- rates %>% filter(behav=="f") %>% filter(rate>0) %>% nrow() 
+feed.act
+```
+## There is a 3.8% probability that an individual will donate its food to another individual. This is not taking into account any type of relationship or association. 
+```{r}
+feed.probability <- feed.act/feed.pos
+feed.probability
+
+```
+
+
+
+```{r}
+rates %>%  
+  filter(behav=="f"| behav=="g") %>%
+  filter(new.dyad) %>% 
+  filter(rate>0) %>% 
+  group_by(undir.dyad, behav) %>% 
+  summarize(latency= min(days.together)) %>% 
+  spread(key=behav, value=latency) %>% 
+  mutate(diff= f-g) %>% 
+  mutate(same= diff==0) %>% 
+  pull(same) %>% 
+  mean(na.rm=T)
+```
+
+
+
+```{r}
+# This is the time until two unfamilar indivudla share food for the first time
+time.to.sharing <- 
+  rates %>%  
+  filter(behav=="f") %>%
+  filter(new.dyad) %>% 
+  filter(rate>0) %>% 
+  group_by(undir.dyad) %>% 
+  summarize(time.to.sharing= min(days.together)) %>% 
+  pull() 
+boot_ci(time.to.sharing)
+range(time.to.sharing)
+
+plot1 <- (boxplot((time.to.sharing), main= "Time Until First New Sharing"))
+```
+
+```{r}
+time.to.groom <- 
+  rates %>%  
+  filter(behav=="g") %>%
+  filter(new.dyad) %>% 
+  filter(rate>0) %>% 
+  group_by(undir.dyad) %>% 
+  summarize(time.to.groom= min(days.together)) %>% 
+  pull() 
+boot_ci(time.to.groom)
+range(time.to.groom)
+
+boxplot((time.to.groom), main= "Time Until First Grooming")
+```
+
+
+```{r}
+par(mfrow = c(1, 2))
+boxplot((time.to.groom),main="Time Until First Grooming")
+boxplot((time.to.sharing), main = "Time Until First Food Sharing")
+```
+
+
