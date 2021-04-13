@@ -41,12 +41,13 @@ library(asnipe)
 library(cowplot)
 library(MuMIn)
 library(ggplot2)
+library(mosaic)
 ```
 
 
 ```{r}
 # Set cowplot as theme
-theme_set()
+theme_set(theme_cowplot())
 ```
 
 # Descriptive Statistical Analysis
@@ -198,7 +199,7 @@ par(mfrow = c(1, 2))
 boxplot((time.to.groom),main="Time Until First Grooming")
 boxplot((time.to.sharing), main = "Time Until First Food Sharing")
 ```
-
+# Data Visualization 
 
 ```{r} 
 # Figure 2 part 1
@@ -256,5 +257,110 @@ fig2.3
 grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
 ```
 
+
+
+
+
+
+# Infrenetial Statistical Analysis
+
+## Create a data frame that filters out Tole bats that are in the mixed group 
+## Filter by feeding behavior
+```{r}
+feedingbehavTole <- as.data.frame(
+  rates %>% 
+  filter(behav=="f") %>%
+  filter(a.pop== "tole") %>% 
+  filter(adult.dyad) %>% 
+  filter(period== "big cage") %>%
+  filter(!is.na(sharing.colony)) %>% 
+  mutate(samepop= a.pop==r.pop) %>%
+  group_by(actor, dir.dyad, samepop) %>% 
+  summarise(rate=mean(rate2)))
+feedingbehavTole
+```
+
+```{r}
+library(mosaic)
+```
+
+```{r}
+perms <- 10000
+fit <- summary(lm(rate~samepop, data=feedingbehavTole))
+fit
+# B=0.09, p=0.03, n=390
+#I got the same beta value of 0.09. I did not get the same p value, however, both are significant. Carter et al. got a p value of 0.003 and I got a p value of 0.03... which is pretty close. 
+
+```
+
+
+
+```{r}
+groomingbehavTole <- as.data.frame(
+  rates %>% 
+  filter(adult.dyad) %>% 
+  filter(period== "big cage") %>%
+  filter(behav=="g") %>%
+  filter(a.pop== "tole") %>% 
+  filter(!is.na(sharing.colony)) %>% 
+  mutate(samepop2= a.pop==r.pop) %>%
+  group_by(actor, dir.dyad, samepop2) %>% 
+  summarise(rate=mean(rate2)))
+groomingbehavTole
+```
+```{r}
+perms <- 10000
+fit2 <- summary(lm(rate~samepop2, data=groomingbehavTole))
+fit2
+nrow(groomingbehavTole)
+# B = 0.103 , p=0.14, n=390
+```
+
+
+
+```{r}
+feedingbehavPavas <- as.data.frame(
+  rates %>% 
+  filter(behav=="f") %>%
+  filter(a.pop== "las.pavas") %>% 
+  filter(adult.dyad) %>% 
+  filter(period== "big cage") %>%
+  filter(!is.na(sharing.colony)) %>% 
+  mutate(samepop= a.pop==r.pop) %>%
+  group_by(actor, dir.dyad, samepop) %>% 
+  summarise(rate=mean(rate2)))
+feedingbehavPavas
+```
+
+```{r}
+perms <- 10000
+fit3 <- summary(lm(rate~samepop, data=feedingbehavPavas))
+fit3
+nrow(groomingbehavTole)
+nrow(feedingbehavPavas)
+# B=0.28, p=0.0001, n=160
+```
+
+```{r}
+groomingbehavPavas <- as.data.frame(
+  rates %>% 
+  filter(behav=="g") %>%
+  filter(a.pop== "las.pavas") %>% 
+  filter(adult.dyad) %>% 
+  filter(period== "big cage") %>%
+  filter(!is.na(sharing.colony)) %>% 
+  mutate(samepop= a.pop==r.pop) %>%
+  group_by(actor, dir.dyad, samepop) %>% 
+  summarise(rate=mean(rate2)))
+groomingbehavPavas
+```
+
+```{r}
+perms <- 10000
+fit4 <- summary(lm(rate~samepop, data=groomingbehavPavas))
+fit4
+nrow(groomingbehavPavas)
+# B=0.53, p<0.0001, n=160
+```
 
 
