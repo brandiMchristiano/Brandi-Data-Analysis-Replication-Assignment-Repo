@@ -154,51 +154,95 @@ hist((time.to.groom), main="Time it Took Unfamilar Individuals to Groonm Eachoth
 
 
 ```{r}
-# To find the confidence intervals of the mean of these events, they boot strapped 10000 samples
-boot_ci <- function(x, perms=10000) { # this is creating a basic function for boot_ci. using the data set (in this case, the fake data set"x"), it will run 10,000 permutations
-  mean.w=function(x,w) sum(x*w)
-  numNA <- sum(is.na(x)) # this counts how many NAs there are 
-  x <- as.vector(na.omit(x))# this takes the data set and just makes it so there are no NAs in it
-  mean <- mean(x) 
-  boot <- boot.ci(boot(data=x, statistic=mean.w, R=perms, stype="w"), type="basic")
-  low <- boot$basic[1,4]
-  high <- boot$basic[1,5]
-  c(low=low,mean=mean,high=high, N=round(length(x)))
-}
-# trying to play with this on my own
+# To find the confidence intervals of the mean of these events, they boot strapped 10000 samples. The CIs I found are not ones included in the report. I ust did this as part of my descriptive stats portion
 
-s <- rates
+n_boot <- 10000
+boot <- vector(length = n_boot) # set up a dummy variable to hold simulations
+n <- length(time.to.share) 
+for (i in 1:10000) {
+  boot[[i]] <- mean(sample(time.to.share, n, replace = TRUE))
+}
+
+hist(boot,
+  breaks = 20, xlab = "Mean",
+  main = "Bootstrapped Sampling Distribution of Time to Share"
+)
+```
+
+```{r}
+
+stat <- function(data, indices) {
+  return(mean(data[indices]))
+}
+results <- boot(data =time.to.share,statistic=stat,R = n_boot)
+results
+
+lower_boot <- quantile(results$t, 0.025)
+lower_boot
+upper_boot <- quantile(results$t, 0.975)
+upper_boot
+
+ci <- cbind(lower_boot,upper_boot)
+ci
+
+mean(results$t) # Th bootstrapped mean it took for individuals to share food is 212 days. The actual mean was 213 days
+```
+
+```{r}
+plot1 <- (boxplot((results$t), main= "Time Until First New Sharing"))
+```
+
+```{r}
+# CI of Time Until First Grooming
 n_boot <- 10000
 boot <- vector(length = n_boot) # set up a dummy variable to hold our simulations
-n <- length(s)
-# number of bootstrap samples will be the same length as our sample data
+n <- length(time.to.groom)
 for (i in 1:10000) {
-  boot[[i]] <- mean(sample(s, n, replace = TRUE))
+  boot[[i]] <- mean(sample(time.to.groom, n, replace = TRUE))
 }
 
-```
+hist(boot,
+  breaks = 20, xlab = "Mean",
+  main = "Bootstrapped Sampling Distribution of Time to Groom"
+)
+stat <- function(data, indices) {
+  return(mean(data[indices]))
+}
+results2 <- boot(data =time.to.groom,statistic=stat,R = n_boot)
+results2
 
-```{r}
-# CI of Time Until First New Sharing
-boot_ci(time.to.share)
 
-plot1 <- (boxplot((time.to.share), main= "Time Until First New Sharing"))
-```
+lower_boot <- quantile(results2$t, 0.025)
+lower_boot
+upper_boot <- quantile(results2$t, 0.975)
+upper_boot
+ci <- cbind(lower_boot, upper_boot)
+ci
 
-```{r}
-# CI of Time Unitl First Grooming
-boot_ci(time.to.groom)
-
-boxplot((time.to.groom), main= "Time Until First Grooming")
+mean(results2$t) # The bootstrapped mean time it took for individuals to groom each other was 188 days. The actual mean was 189 days. 
+boxplot((results2$t), main= "Time Until First Grooming")
 ```
 
 
 ```{r}
 # Comparison of the two
 par(mfrow = c(1, 2))
-boxplot((time.to.groom),main="Time Until First Grooming")
-boxplot((time.to.sharing), main = "Time Until First Food Sharing")
+boxplot((results2$t),main="Time Until First Grooming")
+boxplot((results$t), main = "Time Until First Food Sharing")
 ```
+
+
+```{r}
+(pop_stats1 <- favstats(~time.to.groom, data = dyads))
+(pop_stats2 <- favstats(~time.to.share, data = dyads))
+(pop_stats3 <- favstats(~rate, data = rates))
+(pop_stats4 <- favstats(~rate2, data = rates))
+
+```
+
+
+
+
 # Data Visualization 
 
 ```{r} 
