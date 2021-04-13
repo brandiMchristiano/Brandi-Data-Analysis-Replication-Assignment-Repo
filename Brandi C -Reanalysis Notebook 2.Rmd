@@ -7,21 +7,13 @@ output: html_document
 
 
 # Getting Started 
-```{r}
-# Read in data from CSV Files
-# didn't use this for the analysis I did
-g <- read.csv("genotypes.csv")
-head(g)
 
-k <- read.csv("kinship.csv")
-head(k)
-```
 
 ```{r}
 # Read in data from RData set
 
 # I somehow have to get my data in to knit it 
-
+load("new_bonds_data.RData")
 head(dyads)
 head(events)
 head(rates)
@@ -242,6 +234,69 @@ boxplot((results$t), main = "Time Until First Food Sharing")
 
 
 
+```{r}
+
+# Time until first grooming session in the small groups
+timeuntilgroomSmall <- 
+  rates %>% 
+  filter(new.dyad) %>%
+  filter(adult.dyad) %>% 
+  filter(behav=="g") %>% 
+  #filter(behav=="f") %>% 
+  filter(rate>0) %>% 
+  filter(period=="small cages") %>% 
+  group_by(dir.dyad) %>% 
+  summarize(latency=min(days.together)+1) %>% 
+  mutate(association= "forced")
+
+timeuntilgroomBig <- 
+  rates %>% 
+  filter(new.dyad) %>%
+  filter(adult.dyad) %>% 
+  filter(behav=="g") %>% 
+  #filter(behav=="f") %>% 
+  filter(rate>0) %>% 
+  filter(period=="big cage") %>% 
+  group_by(dir.dyad) %>% 
+  summarize(latency=min(days.together)+1) %>% 
+  mutate(association= "free")
+mean(timeuntilgroomBig$latency)# They found that the mean of time before initial introductions and when the first grooming interaction occured was 146 days
+latency <- 
+  rbind(timeuntilgroomSmall, timeuntilgroomBig) %>% 
+  arrange(dir.dyad, association) %>%
+  group_by(dir.dyad) %>% 
+  summarize(latency=min(latency), 
+            association= min(association))
+latency
+rbind(timeuntilgroomSmall, timeuntilgroomBig) %>% 
+  boot_ci2(y= .$latency, x=.$association)
+# They found the confidence intervals of the latency difference between indivudlas in pairs versus quarlets to be 134 - 160. There were 187 relationships.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Data Visualization 
 
@@ -313,20 +368,17 @@ grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
 ```{r}
 feedingbehavTole <- as.data.frame(
   rates %>% 
-  filter(behav=="f") %>%
-  filter(a.pop== "tole") %>% 
-  filter(adult.dyad) %>% 
-  filter(period== "big cage") %>%
-  filter(!is.na(sharing.colony)) %>% 
-  mutate(samepop= a.pop==r.pop) %>%
-  group_by(actor, dir.dyad, samepop) %>% 
-  summarise(rate=mean(rate2)))
+  filter(behav=="f") %>% #Filters for feeding behavior
+  filter(a.pop== "tole") %>% # Filters for actor population to be Tole
+  filter(adult.dyad) %>% # Only using adult dyads
+  filter(period== "big cage") %>% # Looking at bats in the big cage quartlets
+  filter(!is.na(sharing.colony)) %>% # Filters out everything that is not an NA sharing
+  mutate(samepop= a.pop==r.pop) %>% # mutates the two populations to be one population
+  group_by(actor, dir.dyad, samepop) %>% # grouping by actor just  to have one subset of the data
+  summarise(rate=mean(rate2))) # Making a rate variable that is just the mean of the second Rate column 
 feedingbehavTole
 ```
 
-```{r}
-library(mosaic)
-```
 
 ```{r}
 perms <- 10000
@@ -340,6 +392,7 @@ fit
 
 
 ```{r}
+# same process as previous but this time I do it for grooming behavior
 groomingbehavTole <- as.data.frame(
   rates %>% 
   filter(adult.dyad) %>% 
@@ -362,7 +415,8 @@ nrow(groomingbehavTole)
 
 
 
-```{r}
+```{r} 
+# Same process as before but for Las Pava bats
 feedingbehavPavas <- as.data.frame(
   rates %>% 
   filter(behav=="f") %>%
