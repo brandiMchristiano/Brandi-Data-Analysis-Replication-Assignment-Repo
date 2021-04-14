@@ -33,7 +33,7 @@ head(trials)
 ```
 
 # Load packages used
-```{r, warning=FALSE}
+```{r, warning=FALSE,message=FALSE}
 library(sna)
 library(tidyverse)
 library(boot)
@@ -412,36 +412,36 @@ grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
 
 # Infrenetial Statistical Analysis
 
-## Create a data frame that filters out Tole bats that are in the mixed group 
-## Filter by feeding behavior
-```{r}
+## I recreated analysis to support the author's claim that Las Pavas bats preferentially fed and groomed eachother when given the choice to interact with unfamilar bats from Tole. Tole bats preferentially fed eachother, but did not has a within group bias for grooming. I first found the feeding/grooming rates of bats in the big cage (mixed experiments) who were originally familar with eachother. I then ran a linear model of the behavior rate by individuals in the same poopulation. I did this for both behaviors in each Populationo of bats and produced very similar beta slope and p values as Carter et al. These results can be found in the first paragraph of page 1276 of the paper.
+
+### Feeding behavior in Tole bats
+```{r, warning=FALSE, message=FLASE}
+# Create a data frame that filters out Tole bats that are in the mixed group 
 feedingbehavTole <- as.data.frame(
   rates %>% 
   filter(behav=="f") %>% #Filters for feeding behavior
   filter(a.pop== "tole") %>% # Filters for actor population to be Tole
   filter(adult.dyad) %>% # Only using adult dyads
-  filter(period== "big cage") %>% # Looking at bats in the big cage quartlets
+  filter(period== "big cage") %>% # Looking at bats in the big cage quartet
   filter(!is.na(sharing.colony)) %>% # Filters out everything that is not an NA sharing
   mutate(samepop= a.pop==r.pop) %>% # mutates the two populations to be one population
   group_by(actor, dir.dyad, samepop) %>% # grouping by actor just  to have one subset of the data
-  summarise(rate=mean(rate2))) # Making a rate variable that is just the mean of the second Rate column 
-feedingbehavTole
-```
+  summarise(rate=mean(rate2))) # Making a "rate" variable that is just the mean of the second Rate column 
 
 
-```{r}
-perms <- 10000
-fit <- summary(lm(rate~samepop, data=feedingbehavTole))
+
+fit <- summary(lm(rate~samepop, data=feedingbehavTole)) # runing a linear model
 fit
-# B=0.09, p=0.03, n=390
-#I got the same beta value of 0.09. I did not get the same p value, however, both are significant. Carter et al. got a p value of 0.003 and I got a p value of 0.03... which is pretty close. 
+# My Results:  B=0.09, p=0.03, n=390
+# Carter et al. Results: B=0.09, p=0.003, n=390
+#I got the same beta value of 0.09. I did not get the same p value, however, both are significant. Carter et al. got a p value of 0.003 and I got a p value of 0.03. 
 
 ```
 
 
-
+## Grooming behavior in Tole bats
 ```{r}
-# same process as previous but this time I do it for grooming behavior
+# Same process as above but for grooming behavior
 groomingbehavTole <- as.data.frame(
   rates %>% 
   filter(adult.dyad) %>% 
@@ -452,20 +452,20 @@ groomingbehavTole <- as.data.frame(
   mutate(samepop2= a.pop==r.pop) %>%
   group_by(actor, dir.dyad, samepop2) %>% 
   summarise(rate=mean(rate2)))
-groomingbehavTole
-```
-```{r}
-perms <- 10000
+
+
+
 fit2 <- summary(lm(rate~samepop2, data=groomingbehavTole))
 fit2
 nrow(groomingbehavTole)
-# B = 0.103 , p=0.14, n=390
+# My Results:  B = 0.103 , p=0.14, n=390
+# Carter et al. Results: B = 0.10, p=0.12, n=390
 ```
 
 
-
+## Feeding behavior in Las Pavas bats
 ```{r} 
-# Same process as before but for Las Pava bats
+# Same process as above but for Las Pava bats
 feedingbehavPavas <- as.data.frame(
   rates %>% 
   filter(behav=="f") %>%
@@ -476,18 +476,17 @@ feedingbehavPavas <- as.data.frame(
   mutate(samepop= a.pop==r.pop) %>%
   group_by(actor, dir.dyad, samepop) %>% 
   summarise(rate=mean(rate2)))
-feedingbehavPavas
-```
 
-```{r}
-perms <- 10000
+
 fit3 <- summary(lm(rate~samepop, data=feedingbehavPavas))
 fit3
 nrow(groomingbehavTole)
 nrow(feedingbehavPavas)
-# B=0.28, p=0.0001, n=160
+# My Results: B=0.28, p=0.0001, n=160
+# Carter et al. Results: B = 0.28, p < 0.001, n=160
 ```
 
+## Grooming behavior in Las Pavas bats
 ```{r}
 groomingbehavPavas <- as.data.frame(
   rates %>% 
@@ -499,15 +498,14 @@ groomingbehavPavas <- as.data.frame(
   mutate(samepop= a.pop==r.pop) %>%
   group_by(actor, dir.dyad, samepop) %>% 
   summarise(rate=mean(rate2)))
-groomingbehavPavas
-```
 
-```{r}
-perms <- 10000
+
+
 fit4 <- summary(lm(rate~samepop, data=groomingbehavPavas))
 fit4
 nrow(groomingbehavPavas)
-# B=0.53, p<0.0001, n=160
+# My Results: B=0.53, p<0.0001, n=160
+# Carter et. al Results: B= 0.53, <0.001, n=160
 ```
 
 
