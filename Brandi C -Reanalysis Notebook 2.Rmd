@@ -5,14 +5,26 @@ date: "4/14/2021"
 output: html_document
 ---
 
+# Introduction 
+Goal of the paper 
+  The experiments performed by Carter et al. explored food sharing relationships of common vampire bats (Desmodous rotundus) as a model for the “raising the stakes” model. Decades ago, researchers proposed that social animals are willing to partake in endured, low-cost, cooperative investments to reduce exploitation. Individuals will then “raise the stakes” and gradually increase the investment to form more energetically costly cooperative partnerships. In bats, a low-cost activity includes grooming one another. Whereas a heavily invested partnership would include food sharing with one another. The goal of this study was to investigate if bats follow this model of gradually escalating the occurrence of costly behaviors with familiar and unfamiliar individuals.
+ To understand how the analyses were completed, a brief summary of the experiments is needed. The bats used in these experiments were either captive born or collected from two different sites in Panama: Tole and Las Pavas. Bats from the same location were considered familiar with each other. Three types of experiments were performed. First, all bats from Tole were housed together and any grooming or food sharing was not be considered new. Second, there were “controlled introductions” where either an isolated pair (one bat from each location) were housed together or a quartet (1:3 from the locations) were housed together. Finally, the mixed trials had all bats were housed together. Grooming behaviors and food sharing behaviors were recorded during each trial. 
 
+Data Set Used
+	The dataset used in this analysis is titled new_bonds_data. It consists of four data frames, however I only used two of them for my analysis. The Dyads dataframe consists of 1640 observations of 22 variables. Each bat is considered both an actor or receiver. The actors are considered the focal individual and every rate is based on that individual’s interaction with another’s (the receiver in that trial). The dataframe describes who is the actor and receiver in the trial, which population each is from, if the pairing is an unfamiliar, new pairing (new.diyad) and if those two individuals shared food. The Rates dataframe consists of 50,582 observations of 47 variables. The actor, receiver, and which is the subject of that trial are listed. The behavior between the two individuals is either grooming or feeding. The rate of the behavior is recorded. The population of the actor and receiver are noted. If the dyad of the pairing is new or familiar is documented as a column. The same variables are measured but for the when the reverse individual (actor or receiver) is the subject. 
+
+Analyses Conducted
+	The descriptive analysis conducted in this paper include finding the mean and 95% confidence intervals of how long it took previously unfamiliar individuals to share food when placed in large groups compared the time it took when in pairs. The same analysis was preformed to find the mean and 95% confidence intervals of the how many days it took previously unfamiliar individuals to groom each other in larger versus small groups. This is the analysis I chose to replicate. I successfully found the mean to be 147 days and the 95% confidence intervals to equal 134-159. 
+	The inferential analysis preformed in this paper that I chose to recreate examined if bats from one population chose to feed and groom each other more often than by chance. I first calculated the Beta slope and p value for Tole bats that exhibited within group bias for sharing (ß = 0.09, p = 0.003) but not within group bias for grooming (ß =0.10, p=0.12). I performed the same analysis for the Las Pavas bats and found the same results that the authors did: The bats preferentially fed (ß = 0.28, p<0.001) and groomed (ß = 0.53, p<0.001) each other. As the authors did, I ran 10,000 permutations and then fit the rate by bats in the same population to a linear model. I did this for each behavior of bats from the two locations. 
+	The recreate Figure 2, I filtered through the Rates dataframe for specific conditions and plotted the grooming rate to the future food sharing individual with the grooming rate to non-sharing future individual. Figure 2.A describes these trends in all possible new relationships. Figure 2. B describes these trends in previously unfamiliar individuals and Figure 2.C describes these trends in captive born bats.  
+Conclusions
+	Carter et al. found that new, unfamiliar food sharing relationships were rare. These greater-investment relationships formed after mutual grooming and in a reciprocal pattern. Additionally, new food sharing relationships developed less often when individuals could choose to share with familiar individuals. The authors state that these findings strongly support the “raising the stakes” model. Kinship and genotype analyses were also preformed and confirmed that reciprocal food sharing bonds were not the result of individuals being genetically similar. 
+	
+# Data Analysis Replication
 # Getting Started 
 
-
+## Load in dataset
 ```{r}
-# Read in data from RData set
-
-# I somehow have to get my data in to knit it 
 load("new_bonds_data.RData")
 head(dyads)
 head(events)
@@ -20,9 +32,8 @@ head(rates)
 head(trials)
 ```
 
-
-```{r}
-# Load Packages Used 
+# Load packages used
+```{r, warning=FALSE}
 library(sna)
 library(tidyverse)
 library(boot)
@@ -44,7 +55,7 @@ theme_set(theme_cowplot())
 
 # Descriptive Statistical Analysis
 
-## 41 bats were used in this study
+### 41 bats were used in this study
 ```{r}
 # Number of bats 
 # Each bat is used as a receiver and an actor therefore either of these would suffice
@@ -68,8 +79,9 @@ length(unique(dyads[,1][which(dyads$a.pop=="las.pavas")])) # Here I count the le
 # 8 bats were captured from Las Pavas
 ```
 
-## The remaining 14 bats were captive born bats 
+
 ```{r}
+## The remaining 14 bats were captive born bats 
 length(unique(dyads[,1][which(dyads$a.pop=="captive-born")]))# Here I count the length of unique individuals in the 1st column of the Dyads dataframe where the actor population (a.pop) is captive born
 ```
 
@@ -99,7 +111,7 @@ groom.rate3
 
 ```
 
-## There are 17,621 chances for a bat to recieve a donation
+## There were 17,621 chances for a bat to recieve a donation
 ```{r}
 feed.pos <- nrow(rates %>% filter(behav=="f"))  # Filters the Rates dataframe and counts the number of rows where the behavior is feeding ("f")
 feed.pos
@@ -117,7 +129,7 @@ feed.probability
 ```
 
 
-## How much time did it take for two unfamilar individuals to share food with one another
+## How much time did it take for two unfamilar individuals to share food with one another?
 
 ```{r}
 time.to.share <- pull( # Pulls all the values that match the filter restrictions
@@ -132,7 +144,7 @@ hist((time.to.share), main="Time it Took Unfamilar Individuals to Share Food wit
 ```
 
 ```{r}
-# Does the same thing as before except this filters for grooming behavior
+# Same process as before except this filters for grooming behavior
 time.to.groom <- pull(
   rates %>%  
   filter(behav=="g") %>%
@@ -140,19 +152,17 @@ time.to.groom <- pull(
   filter(rate>0) %>% 
   group_by(undir.dyad) %>% 
   summarize(time.to.groom= min(days.together)))
-mean(time.to.groom)# on average, it took two unfamilar individuals 189 days to groom one another
+mean(time.to.groom)# on average, it took two unfamiliar individuals 189 days to groom one another
 hist((time.to.groom), main="Time it Took Unfamilar Individuals to Groonm Eachother", breaks=50)
 ```
 
-
+## To find the confidence intervals of the mean of these events, they boot strapped 10000 samples. These CIs are not included in the report. 
 ```{r}
-# To find the confidence intervals of the mean of these events, they boot strapped 10000 samples. The CIs I found are not ones included in the report. I ust did this as part of my descriptive stats portion
-
 n_boot <- 10000
 boot <- vector(length = n_boot) # set up a dummy variable to hold simulations
 n <- length(time.to.share) 
 for (i in 1:10000) {
-  boot[[i]] <- mean(sample(time.to.share, n, replace = TRUE))
+  boot[[i]] <- mean(sample(time.to.share, n, replace = TRUE)) # for each repetition, take the mean of the sample of time it took to share n number of times
 }
 
 hist(boot,
@@ -162,7 +172,7 @@ hist(boot,
 ```
 
 ```{r}
-
+#CI of Time Until First Sharing
 stat <- function(data, indices) {
   return(mean(data[indices]))
 }
@@ -177,7 +187,7 @@ upper_boot
 ci <- cbind(lower_boot,upper_boot)
 ci
 
-mean(results$t) # Th bootstrapped mean it took for individuals to share food is 212 days. The actual mean was 213 days
+mean(results$t) # The bootstrapped mean it took for individuals to share food is 212 days. The actual mean was 213 days
 ```
 
 ```{r}
@@ -214,8 +224,6 @@ ci
 mean(results2$t) # The bootstrapped mean time it took for individuals to groom each other was 188 days. The actual mean was 189 days. 
 boxplot((results2$t), main= "Time Until First Grooming")
 ```
-
-
 ```{r}
 # Comparison of the two
 par(mfrow = c(1, 2))
@@ -223,6 +231,7 @@ boxplot((results2$t),main="Time Until First Grooming")
 boxplot((results$t), main = "Time Until First Food Sharing")
 ```
 
+## These are additional stats that were not included in the report but I found iteresting to compare to each other. 
 
 ```{r}
 (pop_stats1 <- favstats(~time.to.groom, data = dyads))
@@ -233,51 +242,91 @@ boxplot((results$t), main = "Time Until First Food Sharing")
 ```
 
 
-
+## As stated in the paper, confidence intervals of the latency difference for individuals in the big group is 134 - 160. There were 187 relationships.
 ```{r}
-
 # Time until first grooming session in the small groups
 timeuntilgroomSmall <- 
-  rates %>% 
-  filter(new.dyad) %>%
-  filter(adult.dyad) %>% 
-  filter(behav=="g") %>% 
-  #filter(behav=="f") %>% 
-  filter(rate>0) %>% 
-  filter(period=="small cages") %>% 
-  group_by(dir.dyad) %>% 
-  summarize(latency=min(days.together)+1) %>% 
-  mutate(association= "forced")
+  rates %>% # Filters through the Rates dataframe
+  filter(period=="small cages") %>% # We are comparing individuals in small cages. These are individuals who are in pairs  
+  filter(behav=="g") %>% # Filters for only grooming behavior
+  filter(rate>0) %>%  # where the grooming rate is greater than 0, indicating that the subject is indeed grooming
+  filter(new.dyad) %>% # only interested in looking at individuals that are unfamiliar with each other
+  filter(adult.dyad) %>% # within the adult dyad
+  group_by(dir.dyad) %>% # The researcher chose the pairing to ensure the individuals were not familiar with each other
+  summarize(latency=min(days.together)+1) %>% # creating a vector of latency as the days they spent together before grooming began. Added 1 because there were a lot of 0 values
+  mutate(association= "forced") # mutating the column "association" to read as forced becasue the bats were forced to eventually interact with that one other individual. They didn't have the choice to choose a different individual to interact with. 
 
-timeuntilgroomBig <- 
+timeuntilgroomBig <-  # same process as above except this now filters through interactions in the big cage where individuals were exposed to everyone. 
   rates %>% 
+  filter(period=="big cage") %>% 
+  filter(behav=="g") %>% 
+  filter(rate>0) %>% 
   filter(new.dyad) %>%
   filter(adult.dyad) %>% 
-  filter(behav=="g") %>% 
-  #filter(behav=="f") %>% 
-  filter(rate>0) %>% 
-  filter(period=="big cage") %>% 
   group_by(dir.dyad) %>% 
   summarize(latency=min(days.together)+1) %>% 
-  mutate(association= "free")
-mean(timeuntilgroomBig$latency)# They found that the mean of time before initial introductions and when the first grooming interaction occured was 146 days
-latency <- 
-  rbind(timeuntilgroomSmall, timeuntilgroomBig) %>% 
-  arrange(dir.dyad, association) %>%
-  group_by(dir.dyad) %>% 
-  summarize(latency=min(latency), 
-            association= min(association))
-latency
-rbind(timeuntilgroomSmall, timeuntilgroomBig) %>% 
-  boot_ci2(y= .$latency, x=.$association)
-# They found the confidence intervals of the latency difference between indivudlas in pairs versus quarlets to be 134 - 160. There were 187 relationships.
+  mutate(association= "free")# The association is "free" because the bats had the option to choose which individual they interacted with
+mean(timeuntilgroomBig$latency)# They found that the mean of time before initial introductions and when the first grooming interaction occurred was 146 days
+timeuntilgroomBig$latency
+
 ```
 
 
 
 
 
+```{r, warning=FALSE}
+n_boot <- 5000
+boot <- vector(length = n_boot) # set up a dummy variable to hold our simulations
+n <- length(timeuntilgroomBig)
+for (i in 1:5000) {
+  boot[[i]] <- mean(sample(timeuntilgroomBig$latency, n, replace = TRUE))
+}
 
+hist(boot,
+  breaks = 20, xlab = "Mean",
+  main = "Bootstrapped Sampling Distribution of Time to Groom in Big Sample"
+)
+stat <- function(data, indices) {
+  return(mean(data[indices]))
+}
+results2 <- boot(data =timeuntilgroomBig$latency,statistic=stat,R = n_boot)
+results2
+
+length(timeuntilgroomBig$latency)
+lower_boot <- quantile(results2$t, 0.025)
+lower_boot
+upper_boot <- quantile(results2$t, 0.975)
+upper_boot
+ci <- cbind(lower_boot, upper_boot)
+ci
+```
+```{r}
+n_boot <- 5000
+boot <- vector(length = n_boot) # set up a dummy variable to hold our simulations
+n <- length(timeuntilgroomSmall)
+for (i in 1:5000) {
+  boot[[i]] <- mean(sample(timeuntilgroomSmall$latency, n, replace = TRUE))
+}
+
+hist(boot,
+  breaks = 20, xlab = "Mean",
+  main = "Bootstrapped Sampling Distribution of Time to Groom in Big Sample"
+)
+stat <- function(data, indices) {
+  return(mean(data[indices]))
+}
+results2 <- boot(data =timeuntilgroomSmall$latency,statistic=stat,R = n_boot)
+results2
+
+length(timeuntilgroomSmall$latency)
+lower_boot <- quantile(results2$t, 0.025)
+lower_boot
+upper_boot <- quantile(results2$t, 0.975)
+upper_boot # I'm not sure why I got the incorrect upper limit
+ci <- cbind(lower_boot, upper_boot)
+ci
+```
 
 
 
