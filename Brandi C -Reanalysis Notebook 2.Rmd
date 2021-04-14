@@ -6,22 +6,25 @@ output: html_document
 ---
 
 # Introduction 
-Goal of the paper 
-  The experiments performed by Carter et al. explored food sharing relationships of common vampire bats (Desmodous rotundus) as a model for the “raising the stakes” model. Decades ago, researchers proposed that social animals are willing to partake in endured, low-cost, cooperative investments to reduce exploitation. Individuals will then “raise the stakes” and gradually increase the investment to form more energetically costly cooperative partnerships. In bats, a low-cost activity includes grooming one another. Whereas a heavily invested partnership would include food sharing with one another. The goal of this study was to investigate if bats follow this model of gradually escalating the occurrence of costly behaviors with familiar and unfamiliar individuals.
- To understand how the analyses were completed, a brief summary of the experiments is needed. The bats used in these experiments were either captive born or collected from two different sites in Panama: Tole and Las Pavas. Bats from the same location were considered familiar with each other. Three types of experiments were performed. First, all bats from Tole were housed together and any grooming or food sharing was not be considered new. Second, there were “controlled introductions” where either an isolated pair (one bat from each location) were housed together or a quartet (1:3 from the locations) were housed together. Finally, the mixed trials had all bats were housed together. Grooming behaviors and food sharing behaviors were recorded during each trial. 
+# **Goal of the paper **
+##The experiments performed by Carter et al. explored food sharing relationships of common vampire bats (*Desmodous rotundus*) as a model for the “raising the stakes” model. Decades ago, researchers proposed that social animals are willing to partake in endured, low-cost, cooperative investments to reduce exploitation. Individuals will then “raise the stakes” and gradually increase the investment to form more energetically costly cooperative partnerships. In bats, a low-cost activity includes grooming one another. Whereas a heavily invested partnership would include food sharing with one another. The goal of this study was to investigate if bats follow this model of gradually escalating the occurrence of costly behaviors with familiar and unfamiliar individuals.
 
-Data Set Used
-	The dataset used in this analysis is titled new_bonds_data. It consists of four data frames, however I only used two of them for my analysis. The Dyads dataframe consists of 1640 observations of 22 variables. Each bat is considered both an actor or receiver. The actors are considered the focal individual and every rate is based on that individual’s interaction with another’s (the receiver in that trial). The dataframe describes who is the actor and receiver in the trial, which population each is from, if the pairing is an unfamiliar, new pairing (new.diyad) and if those two individuals shared food. The Rates dataframe consists of 50,582 observations of 47 variables. The actor, receiver, and which is the subject of that trial are listed. The behavior between the two individuals is either grooming or feeding. The rate of the behavior is recorded. The population of the actor and receiver are noted. If the dyad of the pairing is new or familiar is documented as a column. The same variables are measured but for the when the reverse individual (actor or receiver) is the subject. 
+##To understand how the analyses were completed, a brief summary of the experiments is needed. The bats used in these experiments were either captive born or collected from two different sites in Panama: Tole and Las Pavas. Bats from the same location were considered familiar with each other. Three types of experiments were performed. First, all bats from Tole were housed together and any grooming or food sharing was not be considered new. Second, there were “controlled introductions” where either an isolated pair (one bat from each location) were housed together or a quartet (1:3 from the locations) were housed together. Finally, the mixed trials had all bats were housed together. Grooming behaviors and food sharing behaviors were recorded during each trial. 
 
-Analyses Conducted
-	The descriptive analysis conducted in this paper include finding the mean and 95% confidence intervals of how long it took previously unfamiliar individuals to share food when placed in large groups compared the time it took when in pairs. The same analysis was preformed to find the mean and 95% confidence intervals of the how many days it took previously unfamiliar individuals to groom each other in larger versus small groups. This is the analysis I chose to replicate. I successfully found the mean to be 147 days and the 95% confidence intervals to equal 134-159. 
-	The inferential analysis preformed in this paper that I chose to recreate examined if bats from one population chose to feed and groom each other more often than by chance. I first calculated the Beta slope and p value for Tole bats that exhibited within group bias for sharing (ß = 0.09, p = 0.003) but not within group bias for grooming (ß =0.10, p=0.12). I performed the same analysis for the Las Pavas bats and found the same results that the authors did: The bats preferentially fed (ß = 0.28, p<0.001) and groomed (ß = 0.53, p<0.001) each other. As the authors did, I ran 10,000 permutations and then fit the rate by bats in the same population to a linear model. I did this for each behavior of bats from the two locations. 
-	The recreate Figure 2, I filtered through the Rates dataframe for specific conditions and plotted the grooming rate to the future food sharing individual with the grooming rate to non-sharing future individual. Figure 2.A describes these trends in all possible new relationships. Figure 2. B describes these trends in previously unfamiliar individuals and Figure 2.C describes these trends in captive born bats.  
-Conclusions
-	Carter et al. found that new, unfamiliar food sharing relationships were rare. These greater-investment relationships formed after mutual grooming and in a reciprocal pattern. Additionally, new food sharing relationships developed less often when individuals could choose to share with familiar individuals. The authors state that these findings strongly support the “raising the stakes” model. Kinship and genotype analyses were also preformed and confirmed that reciprocal food sharing bonds were not the result of individuals being genetically similar. 
+# **Data Set Used**
+##The dataset used in this analysis is titled new_bonds_data. It consists of four data frames, however I only used two of them for my analysis. The Dyads dataframe consists of 1640 observations of 22 variables. Each bat is considered both an actor or receiver. The actors are considered the focal individual and every rate is based on that individual’s interaction with another’s (the receiver in that trial). The dataframe describes who is the actor and receiver in the trial, which population each is from, if the pairing is an unfamiliar, new pairing (new.diyad) and if those two individuals shared food. The Rates dataframe consists of 50,582 observations of 47 variables. The actor, receiver, and which is the subject of that trial are listed. The behavior between the two individuals is either grooming or feeding. The rate of the behavior is recorded. The population of the actor and receiver are noted. If the dyad of the pairing is new or familiar is documented as a column. The same variables are measured but for the when the reverse individual (actor or receiver) is the subject. 
+
+# **Analyses Conducted**
+##The descriptive analysis conducted in this paper include finding the mean and 95% confidence intervals of how long it took previously unfamiliar individuals to share food when placed in large groups compared the time it took when in pairs. The same analysis was preformed to find the mean and 95% confidence intervals of the how many days it took previously unfamiliar individuals to groom each other in larger versus small groups. This is the analysis I chose to replicate. I successfully found the mean to be 147 days and the 95% confidence intervals to equal 134-159. 
+
+##The inferential analysis preformed in this paper that I chose to recreate examined if bats from one population chose to feed and groom each other more often than by chance. I first calculated the Beta slope and p value for Tole bats that exhibited within group bias for sharing (ß = 0.09, p = 0.003) but not within group bias for grooming (ß =0.10, p=0.12). I performed the same analysis for the Las Pavas bats and found the same results that the authors did: The bats preferentially fed (ß = 0.28, p<0.001) and groomed (ß = 0.53, p<0.001) each other. As the authors did, I ran 10,000 permutations and then fit the rate by bats in the same population to a linear model. I did this for each behavior of bats from the two locations. 
+
+##The recreate Figure 2, I filtered through the Rates dataframe for specific conditions and plotted the grooming rate to the future food sharing individual with the grooming rate to non-sharing future individual. Figure 2.A describes these trends in all possible new relationships. Figure 2. B describes these trends in previously unfamiliar individuals and Figure 2.C describes these trends in captive born bats.  
+# **Conclusions**
+##Carter et al. found that new, unfamiliar food sharing relationships were rare. These greater-investment relationships formed after mutual grooming and in a reciprocal pattern. Additionally, new food sharing relationships developed less often when individuals could choose to share with familiar individuals. The authors state that these findings strongly support the “raising the stakes” model. Kinship and genotype analyses were also preformed and confirmed that reciprocal food sharing bonds were not the result of individuals being genetically similar. 
 	
 # Data Analysis Replication
-# Getting Started 
+# **Getting Started**
 
 ## Load in dataset
 ```{r}
@@ -349,60 +352,73 @@ ci
 
 # Data Visualization 
 
+## 
+
 ```{r} 
-# Figure 2 part 1
-fig2.1 <- rates %>% 
-  filter(behav=="g") %>%
-   filter(new.dyad) %>%
-  filter(period== "big cage") %>% # this is when they were in groups with unfamilar individuals
+# Figure 2 A
+fig2.a <- rates %>% 
+  filter(behav=="g") %>% # filters for grooming behavior 
+   filter(new.dyad) %>% # only interested in new interactions
+  filter(period== "big cage") %>% # this is when they were in groups with unfamiliar individuals
   filter(!is.na(sharing.colony)) %>% # makes non NA into true values
-  filter(before.first.donation | is.na(before.first.donation)) %>% 
-  mutate(rate3= (rev.groom.rate>0)*1) %>% 
-  ggplot(aes(x=date,y=rate3, group=sharing))+
-  geom_smooth(method = "glm", method.args = list(family = "binomial"))+xlab("time")+ylab("probability of being groomed in a trial (before first donation")
+  filter(before.first.donation | is.na(before.first.donation)) %>%  # filters for through the column that specifies in the interaction was before of after the first donation. This includes both TRUE and FALSE outputs, but not NA outputs
+  mutate(rate3= (rev.groom.rate>0)*1) %>%  # if the grooming happened on the first day the bats were together, than the groom rate = 0. This just makes it so there any value that is greater than 0 stay that value
+  ggplot(aes(x=date,y=rate3, group=sharing))+  # plotting that new "rate" by the months.  
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))+xlab("time")+ylab("probability of being groomed in a trial (before first donation")#They used a generalized mixed model to fit the data to a predictor, which in this case is Date. They choose to do a binomial model because they are looking at the probability of individuals in this specific group sharing or not sharing ("success" or "failure"). 
 
-fig2.1
+fig2.a
+# I don't really understand how to change the dashed and solid lines. The dashed line should represent individuals not sharing
 
+# Embed the image
+   
+     
+
+knitr::include_graphics("img/Figure 2.png")
+#knitr::opts_chunk$set(fig.path = “img/”)
 ```
 
 
+
 ```{r}
-fig2.2<- rates %>% 
+fig2.b<- rates %>% 
   filter(behav=="g") %>%
   filter(new.dyad) %>%
   filter(period== "big cage") %>%
-  filter(adult.dyad) %>%
+  filter(adult.dyad) %>% # this filters ones for bats that were previously unfamiliar with one another that were born in the wild
   filter(!is.na(sharing)) %>% # filter out everything that is not NA in sharing ... aka everything that is sharing
   filter(before.first.donation |is.na(before.first.donation)) %>% 
-  mutate(rate3= (rev.groom.rate2>0)*1) %>% 
+  mutate(rate3= (rev.groom.rate2>0)*1) %>% # groomrate2 was for individuals who were unfamiliar with each other 
   ggplot(aes(date,rate3, group=sharing))+
-  geom_smooth(method = "glm", method.args = list(family = "binomial"))+ # Authors state they used generalized linear models (glm)
-  xlab("time")
-fig2.2
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))+
+  xlab("time")+ylab("")
+fig2.b
 
-# I don't really understand how to change the dashed and solid lines. The dashed line should represent individuals not sharing
+knitr::include_graphics("img/Figure 2.png")
+
 ```
 
 ```{r}
-fig2.3 <- rates %>% 
+fig2.c <- rates %>% 
    filter(behav=="g") %>%
   filter(new.dyad) %>% 
   filter(period== "big cage") %>%
-   filter(!adult.dyad) %>% # looking at new young adults so filter out everything that's not an established adult dyad. 
+   filter(!adult.dyad) %>% # looking at new young adults so filter out everything that's not an established adult dyad
   filter(!is.na(sharing)) %>% 
   filter(before.first.donation | is.na(before.first.donation)) %>% 
   mutate(rate3= (rev.groom.rate>0)*1) %>% 
   ggplot(aes(x=date,y=rate3, group=sharing))+
   geom_smooth(method = "glm",method.args = list(family = "binomial"))+ # showing the standard errors 
   ylab("probability of being groomed in a trial (before first donation)")+
-  xlab("time")
+  xlab("time")+ ylab("")
 
-fig2.3
+fig2.c
+knitr::include_graphics("img/Figure 2.png")
 
 # Once I figured out what was going on in the first plot, the other two were easier tp recreate. They were exactly the same but with an additional filter.
 ```
 ```{r}
-grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
+grid.arrange(fig2.a, fig2.b, fig2.c, ncol=3)
+knitr::include_graphics("img/Figure 2.png")
 ```
 
 
@@ -415,7 +431,7 @@ grid.arrange(fig2.1, fig2.2, fig2.3, ncol=3)
 ## I recreated analysis to support the author's claim that Las Pavas bats preferentially fed and groomed eachother when given the choice to interact with unfamilar bats from Tole. Tole bats preferentially fed eachother, but did not has a within group bias for grooming. I first found the feeding/grooming rates of bats in the big cage (mixed experiments) who were originally familar with eachother. I then ran a linear model of the behavior rate by individuals in the same poopulation. I did this for both behaviors in each Populationo of bats and produced very similar beta slope and p values as Carter et al. These results can be found in the first paragraph of page 1276 of the paper.
 
 ### Feeding behavior in Tole bats
-```{r, warning=FALSE, message=FLASE}
+```{r, warning=FALSE, message=FALSE}
 # Create a data frame that filters out Tole bats that are in the mixed group 
 feedingbehavTole <- as.data.frame(
   rates %>% 
