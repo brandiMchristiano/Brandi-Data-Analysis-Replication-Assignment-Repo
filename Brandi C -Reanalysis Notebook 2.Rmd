@@ -550,18 +550,18 @@ nrow(groomingbehavPavas)
 
 
 
-#Discussion 
-# *Descriptive analysis*
-##Using the code from our class, I was able to create a dummy function to hold the thousands of simulations. This is the analysis that took me the most time, but that was due to my own misunderstanding of the results. Instead of finding the latency of grooming time in each trial, I was trying to create a combined vector of the two. Ultimately this was incorrect, but I only figured that out after spending time trying to decipher through errors. Looking back on the text, the explanation was clear, but I misinterpreted the results. 
+# Discussion 
+## **Descriptive analysis**
+### Using the code from our class, I was able to create a dummy function to hold the thousands of simulations. This is the analysis that took me the most time, but that was due to my own misunderstanding of the results. Instead of finding the latency of grooming time in each trial, I was trying to create a combined vector of the two. Ultimately this was incorrect, but I only figured that out after spending time trying to decipher through errors. Looking back on the text, the explanation was clear, but I misinterpreted the results. 
 
-#*Inferential Analysis*
-##I found the inferential analysis to be the easiest to replicate. It took some time and trial and error to figure out which filters to apply but the authors were very clear about the type of model used. The p value I produced for the feeding behavior in the Tole bats differed a bit from what the authors produced. I produced a p value of 0.03 and the authors produced a p value of 0.003. I kept the model the way it was because I produced the same Beta value. Additionally, I used this same model for the other behaviors/populations and produced almost the exact same results as the authors did (one p vale was different by 0.02). To me, this suggested that my model was correct but perhaps there was a rounding error of values somewhere along the way? 
+## **Inferential Analysis**
+### I found the inferential analysis to be the easiest to replicate. It took some time and trial and error to figure out which filters to apply but the authors were very clear about the type of model used. The p value I produced for the feeding behavior in the Tole bats differed a bit from what the authors produced. I produced a p value of 0.03 and the authors produced a p value of 0.003. I kept the model the way it was because I produced the same Beta value. Additionally, I used this same model for the other behaviors/populations and produced almost the exact same results as the authors did (one p vale was different by 0.02). To me, this suggested that my model was correct but perhaps there was a rounding error of values somewhere along the way? 
 
-#*Visualization*
-##Creating the figure was the most challenging part of the assignment. I first had to spend a bit of time understanding what this type of figure was showcasing. I thought the authors did a poor job explaining the figure in the figure legend, which made it difficult to recreate.  After understanding the basic premise of the figure, I was able to find code online that walked me through what each part of the plot was doing. Filtering through the different variables to get the correct results took a lot of trial and error but I am satisfied with my results. 
+## **Visualization**
+### Creating the figure was the most challenging part of the assignment. I first had to spend a bit of time understanding what this type of figure was showcasing. I thought the authors did a poor job explaining the figure in the figure legend, which made it difficult to recreate.  After understanding the basic premise of the figure, I was able to find code online that walked me through what each part of the plot was doing. Filtering through the different variables to get the correct results took a lot of trial and error but I am satisfied with my results. 
 
-##Each figure was supposed to have one solid line and one dashed line. The dashed line in every figure was the line ( in my figure)  that never really made it past 0.1. The lines themselves represent whether the grooming rate towards the future doner increased over time (solid line) or not (dashed line). I was not able to figure out how to present this on my graph. 
+### Each figure was supposed to have one solid line and one dashed line. The dashed line in every figure was the line ( in my figure)  that never really made it past 0.1. The lines themselves represent whether the grooming rate towards the future doner increased over time (solid line) or not (dashed line). I was not able to figure out how to present this on my graph. 
 
-#*Overall*
-##Overall, I thought the authors sufficiently described the analysis they performed. At the end of the paper, they included summaries of the behavioral analysis and the statistical analyses they preformed which was very useful. They stated the types of models they used, the number of permutations, and how each variable was constructed which all helped quite a bit. However, I felt they really lacked in providing information on how to create the figure. 
+## **Overall**
+### Overall, I thought the authors sufficiently described the analysis they performed. At the end of the paper, they included summaries of the behavioral analysis and the statistical analyses they preformed which was very useful. They stated the types of models they used, the number of permutations, and how each variable was constructed which all helped quite a bit. However, I felt they really lacked in providing information on how to create the figure. 
 
